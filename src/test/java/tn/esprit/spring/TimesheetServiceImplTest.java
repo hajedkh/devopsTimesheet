@@ -10,6 +10,8 @@ import tn.esprit.spring.repository.DepartementRepository;
 import tn.esprit.spring.repository.EmployeRepository;
 import tn.esprit.spring.repository.MissionRepository;
 import tn.esprit.spring.repository.TimesheetRepository;
+
+import java.util.Collections;
 import java.util.Date;
 
 
@@ -41,6 +43,7 @@ public class TimesheetServiceImplTest {
         mission.setDepartement(dep);
         deptRepoistory.save(dep);
         missionRepository.save(mission);
+        assert missionRepository.findById(mission.getId()).isPresent();
         assertEquals(missionRepository.findById(mission.getId()).get().getDepartement().getId(), dep.getId());
     }
 
@@ -64,7 +67,24 @@ public class TimesheetServiceImplTest {
         assertFalse(timesheetRepository.getTimesheetsByMissionAndDate(emp,mission,date,date).isEmpty());
 
     }
+    @Test
+    public void testValiderTimeSheet(){
+        Departement depart= new Departement();
+        deptRepoistory.save(depart);
+        Employe validateur = new Employe("emp1","ben emp1","emp1@emp.com", false,Role.CHEF_DEPARTEMENT);
+        validateur.setDepartements(Collections.singletonList(depart));
+        employeRepository.save(validateur);
 
+        Mission mission = new Mission("mission","12345");
+        mission.setDepartement(depart);
+        missionRepository.save(mission);
+
+        assertEquals(validateur.getRole(), Role.CHEF_DEPARTEMENT);
+
+        //verifier s'il est le chef de departement de la mission en question
+        assertEquals(depart.getId(), mission.getDepartement().getId());
+
+    }
 
 
 
