@@ -38,7 +38,48 @@ public class EmployeServiceImplTest {
 	@Autowired
 	ContratRepository contratRepoistory;
 
-    
+
+	//Test Ajout employe
+	@Test
+	public void testajouterEmploye() {
+		log.info("***Test ajouter employe ***");
+		Employe employe = new Employe("Abdellatif","mouna","mouna@esprit.tn",true, Role.TECHNICIEN);
+		employeRepository.save(employe);
+		assertTrue(employeRepository.findById(employe.getId()).isPresent());
+
+	}
+@Test
+	public void testdeleteEmployeById() {
+	log.info("*****Test Delete employe by id *****");
+	Employe employe = new Employe("Abdellatif", "mouna", "mouna@esprit.tn", true, Role.TECHNICIEN);
+	employeRepository.save(employe);
+	employe = employeRepository.findById(employe.getId()).orElseThrow(() -> new RuntimeException("NotFound"));
+	assertTrue(employeRepository.findById(employe.getId()).isPresent());
+	//Desaffecter l'employe de tous les departements
+	//c'est le bout master qui permet de mettre a jour
+	//la table d'association
+	for (Departement dep : employe.getDepartements()) {
+
+		dep.getEmployes().remove(employe);
+	}
+
+	employeRepository.delete(employe);
+	assertFalse(employeRepository.findById(employe.getId()).isPresent());
+
+}
+@Test
+	public void mettreAjourEmailByEmployeId() {
+	Employe employe = new Employe("Abdellatif", "mouna", "mouna@esprit.tn", true, Role.TECHNICIEN);
+	employeRepository.save(employe);
+	String newemail="test@gmail.com";
+	Employe employe1 = employeRepository.findById(employe.getId()).get();
+	employe1.setEmail(newemail);
+	employeRepository.save(employe1);
+	assertTrue(employe1.getEmail().equals(newemail));
+
+
+
+	}
 	//Test Ajout de Contrat
 	@Test
 	public void testAjoutContrat() {
