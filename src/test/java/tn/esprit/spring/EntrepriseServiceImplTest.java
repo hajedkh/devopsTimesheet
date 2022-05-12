@@ -45,7 +45,7 @@ public class EntrepriseServiceImplTest {
 	
 	
 	@Test
-	public void testAjouterEntreprise() {
+	 void testAjouterEntreprise() {
     	log.info("/************Test add Enterprise**************/");
 		Entreprise entreprise = new Entreprise();
 		entreprise.setName("Vermeg");
@@ -59,7 +59,7 @@ public class EntrepriseServiceImplTest {
 	
 	
 	@Test
-	public void testAjouterDepartement() {
+	 void testAjouterDepartement() {
     	log.info("/************Test add  Department**************/");
 		Departement departement= new Departement();
 		departement.setName("Support");
@@ -75,7 +75,7 @@ public class EntrepriseServiceImplTest {
 	
 	 
 	 @Test
-		public void getEntrepriseById() {
+		 void getEntrepriseById() {
 			Entreprise entreprise = new Entreprise("test","test2");
 
 			entrepriseRepo.save(entreprise);
@@ -87,7 +87,7 @@ public class EntrepriseServiceImplTest {
 	
 	
 	@Test
-	public void testGetAllDepartementsNamesByEntreprise() {
+	 void testGetAllDepartementsNamesByEntreprise() {
     	log.info("/************Add Enterprise to Department**************/");
 
 		Entreprise entreprise = new Entreprise();
@@ -107,7 +107,7 @@ public class EntrepriseServiceImplTest {
 		entrepriseService.deleteEntrepriseById(savedEntrepriseID);	
 }
 	@Test
-	public void deleteEntrepriseById() {
+	 void deleteEntrepriseById() {
 		log.info("*****Test Delete Entreprise by id *****");
 		
 		
