@@ -1,6 +1,5 @@
 package tn.esprit.spring.entities;
 
-import tn.esprit.spring.entities.pojos.MissionRequestModel;
 
 import java.io.Serializable;
 import java.util.List;
@@ -35,17 +34,9 @@ public class Mission implements Serializable {
 		super();
 	}
 
-	public Mission(String name, String description){
+	public Mission(String name, String description) {
 		this.name = name;
-		this.description = description;
-	}
-
-	public Mission(MissionRequestModel mission) {
-		this.id = mission.getId();
-		this.name = mission.getName();
-		this.description = mission.getDescription();
-		this.departement = mission.getDepartement();
-		this.timesheets = mission.getTimesheets();
+		this.description= description;
 	}
 
 

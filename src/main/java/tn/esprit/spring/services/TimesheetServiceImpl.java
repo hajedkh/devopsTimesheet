@@ -22,7 +22,7 @@ import tn.esprit.spring.repository.TimesheetRepository;
 @Service
 @Slf4j
 public class TimesheetServiceImpl implements ITimesheetService {
-	
+	 static final String NOT_FOUND = "Not found";
 
 	@Autowired
 	MissionRepository missionRepository;
@@ -39,8 +39,8 @@ public class TimesheetServiceImpl implements ITimesheetService {
 	}
     
 	public void affecterMissionADepartement(int missionId, int depId) {
-		Mission mission = missionRepository.findById(missionId).orElseThrow(() -> new RuntimeException("NotFound"));
-		Departement dep = deptRepoistory.findById(depId).orElseThrow(() -> new RuntimeException("NotFound"));
+		Mission mission = missionRepository.findById(missionId).orElseThrow(() -> new RuntimeException(NOT_FOUND));
+		Departement dep = deptRepoistory.findById(depId).orElseThrow(() -> new RuntimeException(NOT_FOUND));
 		if(dep!=null && mission!=null) {
 			mission.setDepartement(dep);
 			missionRepository.save(mission);
@@ -72,8 +72,8 @@ public class TimesheetServiceImpl implements ITimesheetService {
 
 		//verifier s'il est un chef de departement (interet des enum)
 
-			Employe validateur =  employeRepository.findById(validateurId).orElseThrow(() -> new RuntimeException("NotFound"));
-			Mission mission =missionRepository.findById(missionId).orElseThrow(() -> new RuntimeException("NotFound"));
+			Employe validateur =  employeRepository.findById(validateurId).orElseThrow(() -> new RuntimeException(NOT_FOUND));
+			Mission mission =missionRepository.findById(missionId).orElseThrow(() -> new RuntimeException(NOT_FOUND));
 			if (!validateur.getRole().equals(Role.CHEF_DEPARTEMENT)) {
 				log.error("l'employe doit etre chef de departement pour valider une feuille de temps !");
 				return;
