@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.extern.slf4j.Slf4j;
 import tn.esprit.spring.entities.Departement;
 import tn.esprit.spring.entities.Employe;
 import tn.esprit.spring.entities.Entreprise;
@@ -14,6 +15,7 @@ import tn.esprit.spring.repository.DepartementRepository;
 import tn.esprit.spring.repository.EntrepriseRepository;
 
 @Service
+@Slf4j
 public class EntrepriseServiceImpl implements IEntrepriseService {
 
 	@Autowired
@@ -22,54 +24,112 @@ public class EntrepriseServiceImpl implements IEntrepriseService {
 	DepartementRepository deptRepoistory;
 	
 	public int ajouterEntreprise(Entreprise entreprise) {
-		entrepriseRepoistory.save(entreprise);
+		try {
+			log.debug("Lancement de la méthode ajouterEntreprise");
+			entrepriseRepoistory.save(entreprise);
+			log.info("L'ajout est terminé avec succés!");
+		} catch (Exception e) {
+			log.error("Erreur dans la méthode ajouterEntreprise():" + e);
+		} finally {
+			log.info("La méthode ajouterEntreprise est terminée sans erreur");
+		}
 		return entreprise.getId();
 	}
 
 	
 	
 	public int ajouterDepartement(Departement dep) {
-		deptRepoistory.save(dep);
+		
+		
+		try {
+			log.debug("Lancement de la méthode ajouterDepartement");
+			deptRepoistory.save(dep);
+			log.info("L'ajout est terminé avec succés!");
+		} catch (Exception e) {
+			log.error("Erreur dans la méthode ajouterDepartement():" + e);
+		} finally {
+			log.info("La méthode ajouterDepartement est terminée sans erreur");
+		}
 		return dep.getId();
+		
 	}
 	
 	public void affecterDepartementAEntreprise(int depId, int entrepriseId) {
-		        //Le bout Master de cette relation N:1 est departement  
-				//donc il faut rajouter l'entreprise a departement 
-				// ==> c'est l'objet departement(le master) qui va mettre a jour l'association
-				//Rappel : la classe qui contient mappedBy represente le bout Slave
-				//Rappel : Dans une relation oneToMany le mappedBy doit etre du cote one.
-				Entreprise entrepriseManagedEntity = entrepriseRepoistory.findById(entrepriseId).get();
-				Departement depManagedEntity = deptRepoistory.findById(depId).get();
-				
-				depManagedEntity.setEntreprise(entrepriseManagedEntity);
-				deptRepoistory.save(depManagedEntity);
-		
+	
+		try {
+			log.debug("Lancement de la méthode affecterDepartementAEntreprise");
+			Entreprise entrepriseManagedEntity = entrepriseRepoistory.findById(entrepriseId).orElse(null);
+			if (entrepriseManagedEntity==null) {
+				log.error("Entreprise does not exist");
+				return;}
+			Departement depManagedEntity = deptRepoistory.findById(depId).orElse(null);
+			if (depManagedEntity==null) {
+				log.error("Departement does not exist");
+				return;}
+			depManagedEntity.setEntreprise(entrepriseManagedEntity);
+			deptRepoistory.save(depManagedEntity);
+		} catch (Exception e) {
+			log.error("Erreur dans la méthode affecterDepartementAEntreprise():" + e);
+		} finally {
+
+			log.info("La méthode affecterDepartementAEntreprise est términé avec succés");
+		}
 	}
 	
 	public List<String> getAllDepartementsNamesByEntreprise(int entrepriseId) {
-		Entreprise entrepriseManagedEntity = entrepriseRepoistory.findById(entrepriseId).get();
 		List<String> depNames = new ArrayList<>();
-		for(Departement dep : entrepriseManagedEntity.getDepartements()){
-			depNames.add(dep.getName());
+		try {
+			log.debug("Lancement de la méthode getAllDepartementsNamesByEntreprise");
+			Entreprise entrepriseManagedEntity = entrepriseRepoistory.findById(entrepriseId).orElse(null);
+			if (entrepriseManagedEntity==null) {
+				log.error("Entreprise does not exist");
+				return null;}
+			for (Departement dep : entrepriseManagedEntity.getDepartements()) {
+				depNames.add(dep.getName());
+			}
+		} catch (Exception e) {
+			log.error("Erreur dans la méthode getAllDepartementsNamesByEntreprise:" + e);
+		} finally {
+			log.info("La méthode getAllDepartementsNamesByEntreprise est términé avec succés");
 		}
-		
 		return depNames;
+
 	}
 
+	@Transactional
 	public void deleteEntrepriseById(int entrepriseId) {
-		entrepriseRepoistory.delete(entrepriseRepoistory.findById(entrepriseId).get());	
+		log.debug("Lancement de la méthode deleteEntrepriseById");
+		try {
+			entrepriseRepoistory.delete(entrepriseRepoistory.findById(entrepriseId).orElse(null));
+		} catch (Exception e) {
+			log.error("Erreur dans la méthode deleteEntrepriseById:" + e);
+		} finally {
+			log.info("La méthode deleteEntrepriseById est términé avec succés");
+		}
 	}
 
+	@Transactional
 	public void deleteDepartementById(int depId) {
-		deptRepoistory.delete(deptRepoistory.findById(depId).get());	
+		log.debug("Lancement de la méthode deleteDepartementById");
+		try {
+			deptRepoistory.delete(deptRepoistory.findById(depId).orElse(null));
+		} catch (Exception e) {
+			log.error("Erreur dans la méthode deleteDepartementById:" + e);
+		} finally {
+			log.info("La méthode deleteDepartementById est términé avec succés");
+		}
 	}
 
 
 	public Entreprise getEntrepriseById(int entrepriseId) {
-		return entrepriseRepoistory.findById(entrepriseId).get();	
+		log.info("fetching Entreprise of id: "+entrepriseId);
+Entreprise entreprise=entrepriseRepoistory.findById(entrepriseId).orElse(null);
+if (entreprise == null) {
+    log.error("No mission Found with ID : " +entrepriseId);
+}
+		return entreprise;	
 	}
-
+	 
 	
 
 }
