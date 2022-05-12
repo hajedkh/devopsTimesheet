@@ -77,49 +77,22 @@ public class EntrepriseServiceImpl implements IEntrepriseService {
 	}
 	
 	public List<String> getAllDepartementsNamesByEntreprise(int entrepriseId) {
+		Entreprise entrepriseManagedEntity = entrepriseRepoistory.findById(entrepriseId).get();
 		List<String> depNames = new ArrayList<>();
-		try {
-			log.debug("Lancement de la méthode getAllDepartementsNamesByEntreprise");
-			Entreprise entrepriseManagedEntity = entrepriseRepoistory.findById(entrepriseId).orElse(null);
-			if (entrepriseManagedEntity==null) {
-				log.error("Entreprise does not exist");
-				return null;}
-			for (Departement dep : entrepriseManagedEntity.getDepartements()) {
-				depNames.add(dep.getName());
-			}
-		} catch (Exception e) {
-			log.error("Erreur dans la méthode getAllDepartementsNamesByEntreprise:" + e);
-		} finally {
-			log.info("La méthode getAllDepartementsNamesByEntreprise est términé avec succés");
+		for(Departement dep : entrepriseManagedEntity.getDepartements()){
+			depNames.add(dep.getName());
 		}
+		
 		return depNames;
-
 	}
 
-	@Transactional
 	public void deleteEntrepriseById(int entrepriseId) {
-		log.debug("Lancement de la méthode deleteEntrepriseById");
-		try {
-			entrepriseRepoistory.delete(entrepriseRepoistory.findById(entrepriseId).orElse(null));
-		} catch (Exception e) {
-			log.error("Erreur dans la méthode deleteEntrepriseById:" + e);
-		} finally {
-			log.info("La méthode deleteEntrepriseById est términé avec succés");
-		}
+		entrepriseRepoistory.delete(entrepriseRepoistory.findById(entrepriseId).get());	
 	}
 
-	@Transactional
 	public void deleteDepartementById(int depId) {
-		log.debug("Lancement de la méthode deleteDepartementById");
-		try {
-			deptRepoistory.delete(deptRepoistory.findById(depId).orElse(null));
-		} catch (Exception e) {
-			log.error("Erreur dans la méthode deleteDepartementById:" + e);
-		} finally {
-			log.info("La méthode deleteDepartementById est términé avec succés");
-		}
+		deptRepoistory.delete(deptRepoistory.findById(depId).get());	
 	}
-
 
 	public Entreprise getEntrepriseById(int entrepriseId) {
 		log.info("fetching Entreprise of id: "+entrepriseId);
