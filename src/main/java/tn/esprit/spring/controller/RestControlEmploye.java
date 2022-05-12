@@ -41,10 +41,10 @@ public class RestControlEmploye {
 	//{"id":1,"nom":"kallel", "prenom":"khaled", "email":"Khaled.kallel@ssiiconsulting.tn", "isActif":true, "role":"INGENIEUR"}
 	
 	@PostMapping("/ajouterEmployer")
-	public Employe ajouterEmploye(@RequestBody Employe employe)
+	public int ajouterEmploye(@RequestParam String nom, @RequestParam String prenom )
 	{
-		iemployeservice.ajouterEmploye(employe);
-		return employe;
+		return iemployeservice.ajouterEmploye(new Employe(nom,prenom));
+
 	}
 	
 	// Modifier email : http://localhost:8081/SpringMVC/servlet/modifyEmail/1/newemail
@@ -68,10 +68,10 @@ public class RestControlEmploye {
 
 	// http://localhost:8081/SpringMVC/servlet/ajouterContrat
 	//{"reference":6,"dateDebut":"2020-03-01","salaire":2000,"typeContrat":"CDD"}
+
 	@PostMapping("/ajouterContrat")
-	public int ajouterContrat(@RequestBody Contrat contrat) {
-		iemployeservice.ajouterContrat(contrat);
-		return contrat.getReference();
+	public int ajouterContrat(@RequestParam float salaire,@RequestParam Date dateDebut,@RequestParam String typeContrat ) {
+		return iemployeservice.ajouterContrat(new Contrat(dateDebut,typeContrat,salaire));
 	}
 	
 	// http://localhost:8081/SpringMVC/servlet/affecterContratAEmploye/6/1
