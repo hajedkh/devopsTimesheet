@@ -99,7 +99,6 @@ public class EntrepriseServiceImplTest {
 		int savedDepartementID= entrepriseService.ajouterDepartement(departement);
 		entrepriseService.affecterDepartementAEntreprise(savedDepartementID,savedEntrepriseID);
 	
-//**************GetAllDepartementsNamesByEntreprise****************//
 		List<String> departmentsNames = entrepriseService.getAllDepartementsNamesByEntreprise(savedEntrepriseID);
 		assertNotNull(departmentsNames);
     	log.info("/************delete  Enterprise & Department**************/");
