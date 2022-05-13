@@ -79,20 +79,24 @@ public class EntrepriseServiceImpl implements IEntrepriseService {
 	public List<String> getAllDepartementsNamesByEntreprise(int entrepriseId) {
 		Entreprise entrepriseManagedEntity = entrepriseRepoistory.findById(entrepriseId).orElse(null);
 		List<String> depNames = new ArrayList<>();
-		for(Departement dep : entrepriseManagedEntity.getDepartements()){
-			depNames.add(dep.getName());
+		if (entrepriseManagedEntity!=null) {
+			for(Departement dep : entrepriseManagedEntity.getDepartements()){
+				depNames.add(dep.getName());	
+			} return depNames;
 		}
-		
-		return depNames;
+		return depNames ;
 	}
 
 	public void deleteEntrepriseById(int entrepriseId) {
-		entrepriseRepoistory.delete(entrepriseRepoistory.findById(entrepriseId).orElse(null));	
-	}
+		Entreprise entreprise= entrepriseRepoistory.findById(entrepriseId).orElse(null);
+		if (entreprise !=null ) {
+			entrepriseRepoistory.delete(entreprise);
+		}	}
 
 	public void deleteDepartementById(int depId) {
-		deptRepoistory.delete(deptRepoistory.findById(depId).orElse(null));	
-	}
+		Departement departement=deptRepoistory.findById(depId).orElse(null);
+		if(departement!=null) {
+		deptRepoistory.delete(departement); }	}
 
 	public Entreprise getEntrepriseById(int entrepriseId) {
 		log.info("fetching Entreprise of id: "+entrepriseId);
