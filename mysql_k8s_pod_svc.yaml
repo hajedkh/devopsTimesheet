@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: mysql
+  name: mysql
+spec:
+  containers:
+    - env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "1234"
+        - name: MYSQL_DATABASE
+          value: timesheet
+      image: mysql:8.0.28
+      imagePullPolicy: IfNotPresent
+      name: mysql
+      ports:
+        - containerPort: 3306
+          name: mysql
+      resources: {}
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: mysql
+  name: mysql
+  namespace: default
+spec:
+  ports:
+    - port: 3306
+      protocol: TCP
+      targetPort: 3306
+  type: ClusterIP
+  selector:
+    run: mysql
