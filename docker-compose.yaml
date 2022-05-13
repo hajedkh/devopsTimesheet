@@ -1,0 +1,34 @@
+version: '3.4'
+services:
+  timesheet:
+    image: timesheet
+    hostname: timesheet
+    networks:
+      timesheetNetwork:
+        ipv4_address: 172.20.199.3
+    environment:
+      DB_HOST: 172.20.199.2:3306
+      DB_USER: root
+      DB_PWD: "1234"
+    expose:
+      - "8082"
+    restart: on-failure:3
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mysql
+  mysql:
+    image: mysql:8.0.28
+    hostname: mysql
+    networks:
+      timesheetNetwork:
+        ipv4_address: 172.20.199.2
+    environment:
+      MYSQL_ROOT_PASSWORD: "1234"
+      MYSQL_DATABASE: timesheet
+networks:
+  timesheetNetwork:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.199.1/24
