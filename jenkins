@@ -1,0 +1,106 @@
+pipeline {
+    environment{
+        registry = "hajedkhlifi/timesheet"
+        TIMESHEET_IMAGE_TAG= "hajedkhlifi/timesheet"
+        registryCredential = 'dockerhub'
+        dockerImage = ''
+    }
+    agent any
+
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+        maven "m2"
+    }
+
+    stages {
+        stage('Clone & build') {
+            steps {
+               
+                // Get some code from a GitHub repository
+                git branch: "main",credentialsId: 'GitHub',url: 'https://github.com/hajedkh/devopsTimesheet.git'
+                
+                // Run Maven on a Unix agent.
+              bat "mvn clean package"
+            }
+        }
+        
+        stage("Static tests") {
+          steps {
+            bat "mvn sonar:sonar -Dsonar.projectKey=Timesheet -Dsonar.host.url=http://localhost:9000 -Dsonar.login=b6d68f98a6eb9658b2a8b057da09db0402f1e527"
+         }
+            
+        }
+        
+        stage("Repackage and deploy to Nexus") {
+          steps {
+            bat "mvn clean package  deploy:deploy-file  -DgroupId=tn.esprit -DartifactId=timesheet -Dversion=1.0 -DgeneratePom=true -Dpackaging=war -DrepositoryId=deploymentRepo -Durl=http://localhost:8081/repository/maven-releases/ -Dfile=target/Timesheet-1.0.war"
+          }
+        }
+        
+      stage('Building image locally') {
+        steps {
+         script {
+          dockerImage = docker.build registry 
+         }
+         }
+      }
+
+      stage('Deploy image to Docker Hub') {
+      steps {
+         script {
+            docker.withRegistry( '', registryCredential ) {
+            dockerImage.push()
+         }
+        }
+      }
+      }
+     stage('CD single engine mode: docker-compose') {
+      steps {
+          
+            bat "docker-compose up -d"
+      }
+      }
+      
+      // when working in High availability system aka cluster we need to prepare the databse separatly and create the entities tables 
+      // IMPORTANT : Do not activate he hibernate auto.ddl option this is a very bad practice specially in large projects
+      // instead generate script using Hibernate tools and launch it or use an implementation of this tool in your PIPELINE (check my github for an example)
+     stage('CD cluster mode : Kubernetes -Pod mysql- ') {
+      steps {
+          
+            bat "kubectl create -f mysql_k8s_pod_svc.yaml"
+      }
+      }
+     stage('CD cluster mode: Kubernetes  -deploy timesheet-') {
+      steps {
+           
+          // waiting to guarantee that the database instance is up but in case of fail to connect
+          // the k8s selfhiling system will handle the application failure
+            
+            bat "kubectl create -f timesheet_k8s_deploy_svc.yaml"
+      }
+      }
+      
+    //   stage('stop all & clean env') {
+    //       steps {
+    //       bat "docker-compose down"
+    //       bat "kubectl delete -f mysql_k8s_pod_svc.yaml"
+    //       bat "kubectl delete -f timesheet_k8s_deploy_svc.yaml"
+    //       bat "docker rmi %TIMESHEET_IMAGE_TAG%"
+    //   }
+          
+    //   }
+      
+      
+        
+    }
+    post{
+     always{
+        emailext to: "hajed.khlifi@esprit.tn",
+        subject: "jenkins build:${currentBuild.currentResult}: ${env.JOB_NAME}",
+        body: "${currentBuild.currentResult}: Job ${env.JOB_NAME}\nMore Info can be found here: ${env.BUILD_URL}"
+      }
+     }
+    
+    
+    
+}
